@@ -1,9 +1,20 @@
-import { useRef } from "react";
+import { ReactElement, useRef } from "react";
 import { useDrop } from "react-dnd";
 import styled from "styled-components";
 
 const ItemTypes = {
     CARD: 'card'
+}
+
+interface IDropAreaProps {
+    toDos: string[],
+    children: ReactElement[]
+}
+
+interface IDraggableCardProp {
+    id: string,
+    index: number,
+    text: string
 }
 
 const Board = styled.div`
@@ -13,11 +24,16 @@ const Board = styled.div`
     background-color: gray;
 `;
 
-const DropArea = ({ onDrop, children }: any) => {
+const DropArea = ({ toDos, children }: IDropAreaProps) => {
     const ref = useRef<HTMLDivElement>(null);
-    const [, drop] = useDrop({
+    const [, drop] = useDrop<
+    IDraggableCardProp,
+    void
+  >({
         accept: ItemTypes.CARD,
-        drop: (item: any) => onDrop(item.id),
+        drop: (item, monitor) => (
+            console.log("drop", item, monitor.canDrop())
+        ),
         collect: (monitor) => ({
             isOver: monitor.isOver()
         })
