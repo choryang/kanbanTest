@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
-import useItemBaseStore from "../store/store";
+import useItemStore from "../store/store";
 
 const ItemTypes = {
     CARD: 'card'
@@ -10,7 +10,13 @@ const ItemTypes = {
 interface IDraggableCardProp {
     id: string,
     index: number,
-    text: string
+    text: string,
+    boardId: string
+}
+
+interface IGetDropResult {
+    dropEffect: string,
+    name: string
 }
 
 const Card = styled.div`
@@ -20,15 +26,11 @@ const Card = styled.div`
     background-color: white;
 `;
 
-const DraggableCard = ({id, index, text}: IDraggableCardProp) => {
+const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
     const ref = useRef<HTMLDivElement>(null);
-    const {toDos, reOrder} = useItemBaseStore();
-    const moveCard = (fromIndex: number, toIndex: number) => {
-        let newToDos = [...toDos];
-        newToDos.splice(fromIndex, 1);
-        newToDos.splice(toIndex, 0, toDos[fromIndex]);
-        reOrder(newToDos);
-    }
+    const boards = useItemStore(state => state.boards);
+    const updateList = useItemStore(state => state.updateList);
+
 
     const [, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -36,6 +38,33 @@ const DraggableCard = ({id, index, text}: IDraggableCardProp) => {
         collect: (monitor) => ({
             isDragging: monitor.isDragging()
         }),
+        end: (_, monitor) => {
+            const result: IGetDropResult | null = monitor.getDropResult();
+            if(result === null) return null;
+        
+            const oldBoardName = boardId;
+            const oldIndex = index;
+            const newBoardName = result.name;
+            const newIndex = monitor.getItem().index;
+
+            if(oldBoardName === newBoardName) {
+                const list = [...boards[oldBoardName]];
+                list.splice(oldIndex, 1);
+                list.splice(newIndex, 0, boards[oldBoardName][oldIndex]);
+                updateList(oldBoardName, list);
+                console.log("same", list);
+                
+            } else {
+                const oldList = [...boards[oldBoardName]];
+                const newList = [...boards[newBoardName]];
+                oldList.splice(oldIndex, 1);
+                newList.splice(newIndex, 0, boards[oldBoardName][oldIndex]);
+                updateList(oldBoardName, oldList);
+                updateList(newBoardName, newList);
+                console.log("same", oldList, newList);
+            }
+            
+        }
     });
 
     const [, drop] = useDrop<
@@ -43,15 +72,13 @@ const DraggableCard = ({id, index, text}: IDraggableCardProp) => {
         void
       >({
             accept: ItemTypes.CARD,
-            drop: (item, monitor) => (
-                console.log("drop", item, monitor.canDrop())
-            ),
             hover: (item: IDraggableCardProp, monitor) => {
                 if (!ref.current) {
                     return;
                 }
                 const dragIndex = item.index;
                 const hoverIndex = index;
+                
 
                 if (dragIndex === hoverIndex) {
                     return;
@@ -68,9 +95,8 @@ const DraggableCard = ({id, index, text}: IDraggableCardProp) => {
                 if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
                     return;
                 }
-                moveCard(dragIndex, hoverIndex);
+
                 item.index = hoverIndex;
-                console.log("hover", dragIndex, hoverIndex);
                 
             },
             collect: (monitor) => ({

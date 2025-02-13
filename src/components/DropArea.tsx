@@ -7,14 +7,8 @@ const ItemTypes = {
 }
 
 interface IDropAreaProps {
-    toDos: string[],
-    children: ReactElement[]
-}
-
-interface IDraggableCardProp {
-    id: string,
-    index: number,
-    text: string
+    id: string
+    children?: ReactElement[]
 }
 
 const Board = styled.div`
@@ -24,16 +18,11 @@ const Board = styled.div`
     background-color: gray;
 `;
 
-const DropArea = ({ toDos, children }: IDropAreaProps) => {
+const DropArea = ({ id, children }: IDropAreaProps) => {
     const ref = useRef<HTMLDivElement>(null);
-    const [, drop] = useDrop<
-    IDraggableCardProp,
-    void
-  >({
+    const [, drop] = useDrop({
         accept: ItemTypes.CARD,
-        drop: (item, monitor) => (
-            console.log("drop", item, monitor.canDrop())
-        ),
+        drop: () => ({name: id}),
         collect: (monitor) => ({
             isOver: monitor.isOver()
         })
@@ -43,7 +32,7 @@ const DropArea = ({ toDos, children }: IDropAreaProps) => {
 
     return (
         <Board ref={ref}>
-            Drop here
+            {id}
             {children}
         </Board>
     )

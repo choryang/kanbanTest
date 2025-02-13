@@ -1,14 +1,17 @@
 import { create } from 'zustand';
 
-interface UseItemBaseStore {
-    toDos: string[];
-    reOrder: (value: string[]) => void;
+interface BoardState {
+    boards: {[key: string]: string[]};
+    updateList: (name: string, list: string[]) => void;
 }
 
-const useItemBaseStore = create<UseItemBaseStore>()((set, get) => ({
-    toDos: ["a", "b", "c", "d", "e", "f"],
-    reOrder: (value: string[]) => set({toDos: value})
-
+const useItemStore = create<BoardState>((set) => ({
+    boards: {
+        "To Do": ["a", "b"],
+        "In Progress": ["c", "d", "e"],
+        Done: ["f"]
+    },
+    updateList: (name, list) => set(state => ({boards: {...state.boards, [name]: list}}))
 }));
 
-export default useItemBaseStore;
+export default useItemStore;

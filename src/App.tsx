@@ -1,19 +1,21 @@
-import { useState } from 'react';
 import DraggableCard from './components/Card'
 import DropArea from './components/DropArea'
 import useItemBaseStore from './store/store';
 
 function App() {
 
-  const {toDos} = useItemBaseStore();
+  const { boards } = useItemBaseStore();
 
   return (
     <>
-      <DropArea toDos={toDos}>
-        {toDos.map((toDo, index) => {
-            return <DraggableCard id={toDo} text={toDo} index={index}/>;
-        })}
-      </DropArea>
+      {Object.keys(boards).map((boardId) => {
+       return  <DropArea id={boardId} key={boardId}>
+          {boards[boardId].map((item, index) => {
+              return <DraggableCard key={item} id={item} boardId={boardId} text={item} index={index}/>;
+          })}
+        </DropArea>
+        })
+      }
     </>
   )
 }
