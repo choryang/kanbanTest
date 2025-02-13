@@ -1,6 +1,6 @@
 import { ReactElement, useRef } from "react";
 import { useDrop } from "react-dnd";
-import styled from "styled-components";
+import {Board, BoardTitle} from "../styles/Board";
 
 const ItemTypes = {
     CARD: 'card'
@@ -11,12 +11,6 @@ interface IDropAreaProps {
     children?: ReactElement[]
 }
 
-const Board = styled.div`
-    border-radius: 5px;
-    margin-bottom: 5px;
-    padding: 10px 10px;
-    background-color: gray;
-`;
 
 const DropArea = ({ id, children }: IDropAreaProps) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -32,7 +26,7 @@ const DropArea = ({ id, children }: IDropAreaProps) => {
 
     return (
         <Board ref={ref}>
-            {id}
+            <BoardTitle>{id}</BoardTitle>
             {children}
         </Board>
     )

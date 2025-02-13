@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import styled from "styled-components";
+import Card from "../styles/Card";
 import useItemStore from "../store/store";
 
 const ItemTypes = {
@@ -19,12 +19,6 @@ interface IGetDropResult {
     name: string
 }
 
-const Card = styled.div`
-    border-radius: 5px;
-    margin-bottom: 5px;
-    padding: 10px 10px;
-    background-color: white;
-`;
 
 const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
     const ref = useRef<HTMLDivElement>(null);
