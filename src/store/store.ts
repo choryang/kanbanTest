@@ -7,9 +7,9 @@ interface BoardState {
 
 const useItemStore = create<BoardState>((set) => ({
     boards: {
-        "To Do": ["a", "b"],
-        "In Progress": ["c", "d", "e"],
-        Done: ["f"]
+        "To Do": ["밥 먹기"],
+        "In Progress": ["사이드 프로젝트"],
+        Done: ["샤워"]
     },
     updateList: (name, list) => set(state => ({boards: {...state.boards, [name]: list}}))
 }));

@@ -1,10 +1,14 @@
-import { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import Card from "../styles/Card";
+import {Card, CardHandle, CardHandleBox} from "../styles/Card";
 import useItemStore from "../store/store";
 
 const ItemTypes = {
     CARD: 'card'
+}
+
+interface IVisibility {
+    value: "hidden" | "visible"
 }
 
 interface IDraggableCardProp {
@@ -24,6 +28,38 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
     const ref = useRef<HTMLDivElement>(null);
     const boards = useItemStore(state => state.boards);
     const updateList = useItemStore(state => state.updateList);
+    const [cardHandleVisible, setCardHandleVisible] = useState<IVisibility>({value: "hidden"})
+    const [contentEditable, setContentEditable] = useState(false);
+
+    const handleCardTextEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if(e.key === "Enter") {
+            const list = [...boards[boardId]];
+            list.splice(index, 1);
+            list.splice(index, 0, e.currentTarget.innerText);
+            updateList(boardId, list); 
+        }
+       
+    }
+
+    const handleCardTextBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+        const list = [...boards[boardId]];
+        list.splice(index, 1);
+        list.splice(index, 0, e.currentTarget.innerText);
+        updateList(boardId, list); 
+       
+    }
+
+    const handleCardBoxHover = () => {
+        setCardHandleVisible({value: "visible"});
+    }
+
+    const handleCardBoxOut = () => {
+        setCardHandleVisible({value: "hidden"});
+    }
+
+    const handleCardTextEdit = () => {
+        setContentEditable(true);
+    }
 
 
     const [, drag] = useDrag({
@@ -45,9 +81,7 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
                 const list = [...boards[oldBoardName]];
                 list.splice(oldIndex, 1);
                 list.splice(newIndex, 0, boards[oldBoardName][oldIndex]);
-                updateList(oldBoardName, list);
-                console.log("same", list);
-                
+                updateList(oldBoardName, list);   
             } else {
                 const oldList = [...boards[oldBoardName]];
                 const newList = [...boards[newBoardName]];
@@ -55,7 +89,6 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
                 newList.splice(newIndex, 0, boards[oldBoardName][oldIndex]);
                 updateList(oldBoardName, oldList);
                 updateList(newBoardName, newList);
-                console.log("same", oldList, newList);
             }
             
         }
@@ -102,7 +135,20 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
 
     drag(drop(ref));
 
-    return <Card ref={ref}>{text}</Card>
+    return (
+        <Card ref={ref} 
+            contentEditable={contentEditable}
+            onKeyDown={handleCardTextEnter} 
+            onBlur={handleCardTextBlur} 
+            onMouseOver={handleCardBoxHover} 
+            onMouseOut={handleCardBoxOut}>
+            {text}
+            <CardHandleBox style={{visibility: `${cardHandleVisible.value}`}}>
+                <CardHandle onClick={handleCardTextEdit}>수정</CardHandle>
+                <CardHandle>삭제</CardHandle>
+            </CardHandleBox>
+        </Card>
+    )
 }
 
 export default DraggableCard;

@@ -21,7 +21,7 @@ function App() {
       emojiBtn.innerHTML = selection.emoji;
     });
 
-  })
+  },[])
 
 
   const emojiHandler = () => {
