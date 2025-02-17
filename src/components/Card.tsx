@@ -29,7 +29,6 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
     const boards = useItemStore(state => state.boards);
     const updateList = useItemStore(state => state.updateList);
     const [cardHandleVisible, setCardHandleVisible] = useState<IVisibility>({value: "hidden"})
-    const [contentEditable, setContentEditable] = useState(false);
 
     const handleCardTextEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if(e.key === "Enter") {
@@ -46,7 +45,6 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
         list.splice(index, 1);
         list.splice(index, 0, e.currentTarget.innerText);
         updateList(boardId, list); 
-       
     }
 
     const handleCardBoxHover = () => {
@@ -55,10 +53,6 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
 
     const handleCardBoxOut = () => {
         setCardHandleVisible({value: "hidden"});
-    }
-
-    const handleCardTextEdit = () => {
-        setContentEditable(true);
     }
 
 
@@ -136,15 +130,11 @@ const DraggableCard = ({id, index, text, boardId}: IDraggableCardProp) => {
     drag(drop(ref));
 
     return (
-        <Card ref={ref} 
-            contentEditable={contentEditable}
-            onKeyDown={handleCardTextEnter} 
-            onBlur={handleCardTextBlur} 
+        <Card ref={ref}  
             onMouseOver={handleCardBoxHover} 
             onMouseOut={handleCardBoxOut}>
-            {text}
+            <span contentEditable onKeyDown={handleCardTextEnter} onBlur={handleCardTextBlur}>{text}</span>
             <CardHandleBox style={{visibility: `${cardHandleVisible.value}`}}>
-                <CardHandle onClick={handleCardTextEdit}>수정</CardHandle>
                 <CardHandle>삭제</CardHandle>
             </CardHandleBox>
         </Card>

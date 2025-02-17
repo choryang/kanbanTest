@@ -4,6 +4,7 @@ import useItemBaseStore from './store/store';
 import { EmojiButton } from '@joeattardi/emoji-button';
 import {Emoji, Title} from './styles/Emoji';
 import { useEffect } from 'react';
+import { BoardWrapper, Wrapper } from './styles/Wrapper';
 
 function App() {
 
@@ -32,10 +33,10 @@ function App() {
  
 
   return (
-    <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", maxWidth: 960, marginTop: 50, marginLeft: "auto", marginRight: "auto"}}>
+    <Wrapper>
       <Emoji id='emojiBtn' onClick={emojiHandler}>😄</Emoji>
       <Title>Kanban Board</Title>
-      <div style={{display: "flex", justifyContent: "center", alignItems: "flex-start", gap: 20, marginTop: 30}}>
+      <BoardWrapper>
       {Object.keys(boards).map((boardId) => {
        return  <DropArea id={boardId} key={boardId}>
           {boards[boardId].map((item, index) => {
@@ -44,8 +45,8 @@ function App() {
         </DropArea>
         })
       }
-      </div>
-    </div>
+      </BoardWrapper>
+    </Wrapper>
   )
 }
 

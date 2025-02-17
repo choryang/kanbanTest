@@ -20,7 +20,7 @@ const DropArea = ({ id, children }: IDropAreaProps) => {
 
     const handleNewCard = () => {
         const list = [...boards[id]];
-        list.push(" ");
+        list.push("새 아이템");
         updateList(id, list);
     }
 
